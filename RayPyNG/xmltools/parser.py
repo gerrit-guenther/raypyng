@@ -32,7 +32,7 @@ class Handler(handler.ContentHandler):
         # local copy is nessesary, input object can change and we should not 
         # save reference to it
 
-        # Shall it be moved into the 
+        # This shall be moved into the element class
         attrs = SafeValueDict()
         for k, v in attributes.items():
             attrs[k] = v#self.protectName(v)

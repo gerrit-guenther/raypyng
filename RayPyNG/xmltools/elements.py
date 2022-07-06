@@ -18,52 +18,56 @@ class XmlElement:
         _type_: _description_
     """
     #####################################
-    def __init__(self, name:str, attributes:typing.MutableMapping, **kwargs):
+    def __init__(self, name:str, attributes:typing.MutableMapping, attribute_map=None, **kwargs):
         """_summary_
 
         Args:
             name (str): element name
             attributes (dict): element attributes as a dict-like object
         """
+
+        # check parameters
         if name is not None and not isinstance(name,str):
             raise TypeError("name parameter of 'XmlElement' class must be a string or 'None', got {}".format(type(name)))
-        self._original_name = name
-        self._name = sanitizeName(name)
         if attributes is not None and not isinstance(attributes,typing.MutableMapping):
             raise TypeError("attributes parameter of 'XmlElement' class must be a dict-line object or 'None', got {}".format(type(attributes)))
-        
-        # converting attributes ...
+
+        # set name
+        self._original_name = name
+        self._name = sanitizeName(name)
+
+        # initialize fields
+        self._children = []
+        self.is_root = False
+        self.cdata = ""
+
+        # initilize attributes ...
         _attributes = SafeValueDict()
         if attributes is not None:
             if isinstance(attributes,MappedDict):
                 _attribute_items = attributes.original().items()
             else:
                 _attribute_items = attributes.items()
-            for k,v in _attribute_items:
-                _attributes[k] = v#XmlAttribute(v)
+            for name,value in _attribute_items:
+                _attributes[name] = XmlAttributeTypeFactory(value)
+                #_attributes[name] = value#XmlAttribute(v)
         self._attributes = _attributes
 
-        self._children = []
-        self.is_root = False
-        self.cdata = ""
 
-
-    #@property
-    def children(self):
+    #########################################
+    def elements(self):
         return self._children
 
-    #@property
     def attributes(self):
         return self._attributes
 
-    #@property
     def original_name(self):
         return self._original_name
 
-    #@property
     def name(self):
         return self._name
 
+    #########################################
     def add_child(self, element):
         """
         Store child elements.
@@ -101,7 +105,7 @@ class XmlElement:
         matching_children = [x for x in self._children if x._name == key]
         if matching_children:
             if len(matching_children) == 1:
-                self.__dict__[key] = matching_children[0]
+                self.__dict__[key] = matching_children[0] # caching of the value
                 return matching_children[0]
             else:
                 self.__dict__[key] = matching_children
@@ -138,7 +142,6 @@ class XmlElement:
     def __eq__(self, val):
         return self.cdata == val
 
-
     def __hash__(self) -> int:
         return hash((tuple(self._children),tuple(self._attributes),tuple(self._name)))
 
@@ -152,7 +155,7 @@ class XmlElement:
     def __contains__(self, key):
         return key in dir(self)
 
-
+    # implementation for the "with" logic
     def __enter__(self):
         return self
 
