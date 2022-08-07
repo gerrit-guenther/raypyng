@@ -10,13 +10,13 @@ sim_folder = 'Beamwaist_test'
 bw = PlotBeamwaist(sim_folder, sim)
 
 energy = 500
-nrays = 100000
+nrays = 10000
 bw.simulate_beamline(energy,nrays=nrays, force=False)
 
 
 bw.define_hist(lim=20,step=.5)  # lim should be larger than max beam waist
 bw.define_zstep(step_z=100)      # in mm, step in optical direction to trace RAYS
-bw.reduce_Nrays(factor = 100)   # this reduces the n of rays by the factor you set
+bw.reduce_Nrays(factor = 1)   # this reduces the n of rays by the factor you set
 
 bw.trace_beamwaist(save_results=True)
 
