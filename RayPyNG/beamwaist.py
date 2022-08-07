@@ -30,7 +30,7 @@ class PlotBeamwaist():
     def simulate_beamline(self, energy:float,/,source:ObjectElement=None,nrays:int=None, force:bool=False):
         self._sim.beamwaist_simulation(energy,source=source,nrays=nrays,sim_folder=self._original_directory, force=force)
     
-    def _parse_beamline_elements(self, debug=False):
+    def _parse_beamline_elements(self, debug=False, include_last=True):
         self.element_names_list = []
         self.distance_list=[]
         self.rotation_list=[]
@@ -53,8 +53,12 @@ class PlotBeamwaist():
                             else: 
                                 raise ValueError('Only beamline elements with azimuthal angle 0,90,180,270 are supported', oe.name, par.azimuthalAngle.cdata)
                         # append to element names list, only if it is not an imageplane
-                        if oe.get_attribute('type') != 'ImagePlaneBundle' and oe.get_attribute('type') != 'ImagePlane':
-                            self.element_names_list.append(oe.attributes().original()['name'])
+                        if include_last==False:
+                            if oe.get_attribute('type') != 'ImagePlaneBundle' and oe.get_attribute('type') != 'ImagePlane':
+                                self.element_names_list.append(oe.attributes().original()['name'])
+                        else:
+                                self.element_names_list.append(oe.attributes().original()['name'])
+                    
                     except AttributeError:
                         pass
         if debug:
@@ -188,7 +192,76 @@ class PlotBeamwaist():
     def change_name(self, new_name, pos):
         self.element_names_list[pos] = new_name 
         
+    def _extract_ray_position(self, rays, survivors=False):
+        if isinstance(survivors,int):
+            ox     = np.array(rays[:,3][:survivors])
+            oy     = np.array(rays[:,4][:survivors])
+            oz     = np.array(rays[:,5][:survivors])
+        else:
+            ox = np.zeros(survivors.shape[0])
+            oy = np.zeros(survivors.shape[0])
+            oz = np.zeros(survivors.shape[0])
+            count=0
+            for ind, survivor in enumerate(survivors):
+                if survivor in rays[:,0]:
+                    ox[count]=rays[ind,3]
+                    oy[count]=rays[ind,4]
+                    oz[count]=rays[ind,5]
+                    count+=1
+        return ox,oy,oz
+
+    def _survived_rays(self,rays):
+        survivors = rays[:,0]
+        return survivors
+
+    def plot_3d(self, real_distances=False, nrays=300):
+        self._parse_beamline_elements(include_last=True)
+        fig = plt.figure(figsize = (10, 7))
+        ax = plt.axes(projection ="3d")
         
+        rays_last_oe = np.loadtxt(os.path.join(self.directory,'round_0', 
+                                         '0_'+self.element_names_list[-1]
+                                         +'-RawRaysOutgoing.csv'),skiprows=2)
+
+        survivors = self._survived_rays(rays_last_oe)
+        for ind, name in enumerate(self.element_names_list):
+            rays    = np.loadtxt(os.path.join(self.directory,'round_0', 
+                                         '0_'+name
+                                         +'-RawRaysOutgoing.csv'),skiprows=2)
+            try:
+                rays_next_oe = np.loadtxt(os.path.join(self.directory,'round_0', 
+                                         '0_'+self.element_names_list[ind+1]
+                                         +'-RawRaysOutgoing.csv'),skiprows=2)
+            except IndexError:
+                rays_next_oe = np.loadtxt(os.path.join(self.directory,'round_0', 
+                                         '0_'+name
+                                         +'-RawRaysOutgoing.csv'),skiprows=2)
+
+
+            survivors = self._survived_rays(rays_next_oe)
+            
+            ox,oy,oz = self._extract_ray_position(rays, survivors)
+            if real_distances:
+                disp = np.sum(np.array(self.distance_list[:ind+1]))/1000
+            else:
+                if ind ==0:
+                    disp = 0
+                else:
+                    disp+=10
+            color=['','r', 'b', 'g', 'k', 'orange', 'violet', 'purple', 'yellow', 'magenta']
+            color = color+color
+            if ind > 0 :
+                for i in range(ox.shape[0]):
+                    if i<=nrays:
+                        ax.plot([ox[i],ox_p[i]],[oy[i]+disp,oy_p[i]+disp_p],[oz[i],oz_p[i]], color[ind], linewidth=0.1)
+            ox_p,oy_p,oz_p = ox,oy,oz
+            disp_p=disp
+        ax.view_init(elev=0., azim=0)
+        plt.legend()
+        plt.show()
+            
+
+
     def plot(self,save_img = True, img_name='test', extension='.png', show_img=False, annotate_OE=False,lim_top=False,lim_side=False, debug=False):
         dx, dy = self.step_z, self.step
         xmax = self.yh.shape[1]*self.step_z + dx
