@@ -131,6 +131,7 @@ class SimulationParams():
             result.append(self._make_dictionary(self.param_to_simulate, i))
         return result
 
+    
     def _calc_loop(self, verbose:bool=True):
         """Calculate the simulations loop
 
@@ -138,14 +139,14 @@ class SimulationParams():
             self.param_to_simulate (list): idependent and dependent parameters
             self.simulations_param_list (list): parameters values for each simulation loop
         """                
-        self.param_to_simulate = self.ind_par + self.dep_par
         self.simulations_param_list = []
+        self.dep_param_dependency_index = []
+        self.param_to_simulate = self.ind_par + self.dep_par
         # here we arrange the indipendent parameters in a grid
         self.loop = list(itertools.product(*self.ind_param_values))
         
         # work out where are the parameters on which the dependent parameters depends
         # make a copy of the dependency dictionary and replace the items with the index in the second step
-        self.dep_param_dependency_index = []
         for ind,par in enumerate(self.dep_param_dependency.values()):
             index_par = self.ind_par.index(par)
             self.dep_param_dependency_index.append(index_par)
