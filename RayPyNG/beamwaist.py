@@ -27,14 +27,15 @@ class PlotBeamwaist():
         self.count_el         = 0
         self.count_fig        = 0
     
-    def simulate_beamline(self, energy:float,/,source:ObjectElement=None,nrays:int=None, force:bool=False):
-        self._sim.beamwaist_simulation(energy,source=source,nrays=nrays,sim_folder=self._original_directory, force=force)
+    def simulate_beamline(self, energy:float,/,source:ObjectElement=None,nrays:int=None, force:bool=False, include_screens=False):
+        self._sim.beamwaist_simulation(energy,source=source,nrays=nrays,sim_folder=self._original_directory, force=force,include_screens=include_screens)
     
     def _parse_beamline_elements(self, debug=False, include_last=True):
         self.element_names_list = []
         self.distance_list=[]
         self.rotation_list=[]
         for ind, oe in enumerate(self._sim.rml.beamline._children):
+                print("DEBUG::oe.attributes().original()['name']", oe.attributes().original()['name'])
                 for par in oe:
                     try:
                         # append to distances
@@ -53,14 +54,11 @@ class PlotBeamwaist():
                             else: 
                                 raise ValueError('Only beamline elements with azimuthal angle 0,90,180,270 are supported', oe.name, par.azimuthalAngle.cdata)
                         # append to element names list, only if it is not an imageplane
-                        if include_last==False:
-                            if oe.get_attribute('type') != 'ImagePlaneBundle' and oe.get_attribute('type') != 'ImagePlane':
-                                self.element_names_list.append(oe.attributes().original()['name'])
-                        else:
-                                self.element_names_list.append(oe.attributes().original()['name'])
-                    
+                        
+                        if oe.get_attribute('type') != 'ImagePlaneBundle' and oe.get_attribute('type') != 'ImagePlane':
+                            self.element_names_list.append(oe.attributes().original()['name'])
                     except AttributeError:
-                        pass
+                            pass
         if debug:
             print('DEBUG:: element_names_list', self.element_names_list)
             print('DEBUG:: distance_list', self.distance_list)
@@ -216,6 +214,7 @@ class PlotBeamwaist():
 
     def plot_3d(self, real_distances=False, nrays=300):
         self._parse_beamline_elements(include_last=True)
+        print("DEBUG:: elf.element_names_list",self.element_names_list)
         fig = plt.figure(figsize = (10, 7))
         ax = plt.axes(projection ="3d")
         

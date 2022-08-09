@@ -493,7 +493,7 @@ class Simulate():
         self.rml_list()
         self.run_mp(number_of_cpus=cpu,force=True)
 
-    def beamwaist_simulation(self, energy:float,/,source:ObjectElement=None,nrays:int=None,sim_folder:str=None, force:bool=False):
+    def beamwaist_simulation(self, energy:float,/,source:ObjectElement=None,nrays:int=None,sim_folder:str=None, force:bool=False, include_screens=False):
         if not isinstance(energy, (int,float)):
            raise TypeError('The energy_range must be an a ragne or a numpy array, while it is a', type(energy_range))
         params = []
@@ -535,7 +535,8 @@ class Simulate():
         for oe in self.rml.beamline._children:
             for par in oe:
                 try:
-                    par.alignmentError
+                    if include_screens == False:
+                        par.alignmentError
                     oe_list.append(oe)
                 except AttributeError:
                     pass
