@@ -1,0 +1,65 @@
+<mxfile host="65bd71144e">
+    <diagram id="8MR8gkfHYnzTGbwFSKd3" name="Page-1">
+        <mxGraphModel dx="1905" dy="533" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+            <root>
+                <mxCell id="0"/>
+                <mxCell id="1" parent="0"/>
+                <mxCell id="6" value="RayPyNG" style="swimlane;" vertex="1" parent="1">
+                    <mxGeometry x="80" y="80" width="360" height="360" as="geometry"/>
+                </mxCell>
+                <mxCell id="15" value="runner backend" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="6">
+                    <mxGeometry x="160" y="50" width="120" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="19" value="data backend" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="6">
+                    <mxGeometry x="160" y="240" width="120" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="7" value="RayUI app and API" style="swimlane;" vertex="1" parent="1">
+                    <mxGeometry x="480" y="80" width="280" height="360" as="geometry"/>
+                </mxCell>
+                <mxCell id="13" style="edgeStyle=none;html=1;entryX=1;entryY=0.5;entryDx=0;entryDy=0;entryPerimeter=0;" edge="1" parent="7" source="8" target="9">
+                    <mxGeometry relative="1" as="geometry">
+                        <Array as="points">
+                            <mxPoint x="140" y="270"/>
+                        </Array>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="8" value="RayUI application" style="shape=process;whiteSpace=wrap;html=1;backgroundOutline=1;" vertex="1" parent="7">
+                    <mxGeometry x="15" y="40" width="245" height="80" as="geometry"/>
+                </mxCell>
+                <mxCell id="12" style="edgeStyle=none;html=1;entryX=0.2;entryY=0.988;entryDx=0;entryDy=0;entryPerimeter=0;" edge="1" parent="7" source="4" target="8">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="4" value="RML file" style="strokeWidth=2;html=1;shape=mxgraph.flowchart.document2;whiteSpace=wrap;size=0.25;" vertex="1" parent="7">
+                    <mxGeometry x="15" y="170" width="100" height="50" as="geometry"/>
+                </mxCell>
+                <mxCell id="9" value="Simulation result" style="strokeWidth=2;html=1;shape=mxgraph.flowchart.document2;whiteSpace=wrap;size=0.25;" vertex="1" parent="7">
+                    <mxGeometry x="15" y="240" width="100" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="14" value="BluySky" style="swimlane;" vertex="1" parent="1">
+                    <mxGeometry x="-200" y="80" width="240" height="360" as="geometry"/>
+                </mxCell>
+                <mxCell id="16" value="" style="shape=flexArrow;endArrow=classic;startArrow=classic;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;exitX=1;exitY=0.5;exitDx=0;exitDy=0;" edge="1" parent="1" source="15" target="8">
+                    <mxGeometry width="100" height="100" relative="1" as="geometry">
+                        <mxPoint x="400" y="240" as="sourcePoint"/>
+                        <mxPoint x="500" y="140" as="targetPoint"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="17" value="STDIO" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" vertex="1" connectable="0" parent="16">
+                    <mxGeometry x="-0.2632" y="2" relative="1" as="geometry">
+                        <mxPoint x="20" y="2" as="offset"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="18" style="edgeStyle=none;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;entryPerimeter=0;" edge="1" parent="1" source="15" target="4">
+                    <mxGeometry relative="1" as="geometry">
+                        <Array as="points">
+                            <mxPoint x="300" y="275"/>
+                        </Array>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="21" style="edgeStyle=none;html=1;exitX=0;exitY=0.5;exitDx=0;exitDy=0;exitPerimeter=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="9" target="19">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+            </root>
+        </mxGraphModel>
+    </diagram>
+</mxfile>
