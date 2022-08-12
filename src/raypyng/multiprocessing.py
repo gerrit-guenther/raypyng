@@ -1,5 +1,6 @@
 
 import schwimmbad
+from multiprocessing import Pool
 
 class SequentialRunnerPool:
     """Most simplistic implementation of the sequential runner pool
@@ -32,7 +33,8 @@ def RunPool(multiprocessing=True):
         return SequentialRunnerPool()
     elif multiprocessing==True:
         multiprocessing==None
-    return schwimmbad.JoblibPool(multiprocessing)
+    #return schwimmbad.JoblibPool(multiprocessing)
+    return Pool(multiprocessing)
 
 # multiprocesing = True/False (autodetect CPU number)
 # multiprocessing = 5 # use 5 CPUs
