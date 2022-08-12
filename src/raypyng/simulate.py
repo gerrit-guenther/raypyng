@@ -450,7 +450,7 @@ class Simulate():
         _pbar = tqdm(total=ind+1)
         with RunPool(multiprocessing) as pool:
             #pool.map(run_rml_func,zip(filenames_hide_analyze,exports))
-            for i,_ in enumerate(pool.imap_unordered(run_rml_func, zip(filenames_hide_analyze,exports), ind+1)):
+            for i,_ in enumerate(pool.map(run_rml_func, zip(filenames_hide_analyze,exports), ind+1)):
                 pass
 
     def generate_export_params(self,simulation_index,rml):
