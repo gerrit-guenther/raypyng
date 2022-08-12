@@ -7,6 +7,8 @@ import numpy as np
 from .runner import RayUIAPI,RayUIRunner
 from .recipes import SimulationRecipe
 from .multiprocessing import RunPool
+from tqdm import *
+
 
 ################################################################
 class SimulationParams():
@@ -443,8 +445,13 @@ class Simulate():
             filenames_hide_analyze.append([rml.filename, self._hide, self._analyze])
             exports.append(self.generate_export_params(ind,self.sim_list_path[ind]))
             rml.write()
+        
+        global _pbar
+        _pbar = tqdm(total=ind+1)
         with RunPool(multiprocessing) as pool:
-            pool.map(run_rml_func,zip(filenames_hide_analyze,exports))
+            #pool.map(run_rml_func,zip(filenames_hide_analyze,exports))
+            for i,_ in enumerate(pool.imap_unordered(run_rml_func, zip(filenames_hide_analyze,exports), ind+1)):
+                pass
 
     def generate_export_params(self,simulation_index,rml):
         folder = os.path.dirname(rml)
@@ -514,6 +521,7 @@ class Simulate():
         self.run_mp(number_of_cpus=1,force=force)
          
 def run_rml_func(_tuple):
+    #print('tracing')
     filenames_hide_analyze,exports = _tuple
     rml_filename = filenames_hide_analyze[0]
     hide         = filenames_hide_analyze[1]
@@ -533,4 +541,5 @@ def run_rml_func(_tuple):
         pass
     #time.sleep(1) # testing file creation issue
     runner.kill()
+    _pbar.update(1)
     return None
