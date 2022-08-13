@@ -6,7 +6,6 @@ class SequentialRunnerPool:
     """Most simplistic implementation of the sequential runner pool
     """
     def map(self,func, opts):
-        print('opts',opts)
         for item in opts:
             func(item)
 
@@ -35,7 +34,6 @@ def RunPool(multiprocessing=True):
     elif multiprocessing==True:
         multiprocessing==None
     return schwimmbad.JoblibPool(multiprocessing)
-    #return Pool(processes=multiprocessing)
 
 # multiprocesing = True/False (autodetect CPU number)
 # multiprocessing = 5 # use 5 CPUs
