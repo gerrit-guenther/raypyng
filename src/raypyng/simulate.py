@@ -556,7 +556,7 @@ def run_rml_func(_tuple):
     return None
 
 def progressbar(temporary_filename, n_sim, sp_time):
-    try:
+    try: # necessary to catch exception from opening/close of the file simultaneosly by different CPUs.
         progress = np.load(temporary_filename)[0]+1
         time     = np.load(temporary_filename)[1]
         if progress == 0:
