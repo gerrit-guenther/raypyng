@@ -8,6 +8,9 @@ from .runner import RayUIAPI,RayUIRunner
 from .recipes import SimulationRecipe
 from .multiprocessing import RunPool
 from tqdm import *
+import time
+import datetime
+
 
 
 ################################################################
@@ -441,17 +444,20 @@ class Simulate():
 
         filenames_hide_analyze = []
         exports = []
-        for ind,rml in self.check_simulations(force=force).items():
-            filenames_hide_analyze.append([rml.filename, self._hide, self._analyze])
+        self.sim_path = os.path.join(self.path, self.prefix+'_'+self.simulation_name)
+        fn = os.path.join(self.sim_path, '_temp_progress.npy')
+        missing_sim = self.check_simulations(force=force).items()
+        for ind,rml in missing_sim:
+            filenames_hide_analyze.append([rml.filename, self._hide, self._analyze,fn, len(missing_sim)])
             exports.append(self.generate_export_params(ind,self.sim_list_path[ind]))
             rml.write()
         
-        global _pbar
-        _pbar = tqdm(total=ind+1)
+        progress = np.zeros(2)
+        np.save(fn, progress)
+
         with RunPool(multiprocessing) as pool:
-            #pool.map(run_rml_func,zip(filenames_hide_analyze,exports))
-            for i,_ in enumerate(pool.map(run_rml_func, zip(filenames_hide_analyze,exports), ind+1)):
-                pass
+            pool.map(run_rml_func,zip(filenames_hide_analyze,exports))
+        os.remove(fn)
 
     def generate_export_params(self,simulation_index,rml):
         folder = os.path.dirname(rml)
@@ -521,11 +527,13 @@ class Simulate():
         self.run_mp(number_of_cpus=1,force=force)
          
 def run_rml_func(_tuple):
-    #print('tracing')
+    start = time.time()
     filenames_hide_analyze,exports = _tuple
     rml_filename = filenames_hide_analyze[0]
     hide         = filenames_hide_analyze[1]
     analyze      = filenames_hide_analyze[2]
+    fn           = filenames_hide_analyze[3]
+    n_sim        = filenames_hide_analyze[4]
     runner = RayUIRunner(hide=hide)
     api    = RayUIAPI(runner)
     runner.run()
@@ -541,5 +549,31 @@ def run_rml_func(_tuple):
         pass
     #time.sleep(1) # testing file creation issue
     runner.kill()
-    _pbar.update(1)
+    #_pbar.update(1)
+    end = time.time()
+    progressbar(fn, n_sim, end-start)
+    
     return None
+
+def progressbar(temporary_filename, n_sim, sp_time):
+    try:
+        progress = np.load(temporary_filename)[0]+1
+        time     = np.load(temporary_filename)[1]
+        if progress == 0:
+            time = sp_time
+        else:
+            time = (time*(progress-1)+sp_time)/progress
+        time_left = str(datetime.timedelta(seconds=time*(n_sim-progress)))
+        bar = '['
+        for n in range(80):
+            p = progress/n_sim*80
+            if n<p:
+                bar+='#'
+            else:
+                bar+='-'
+        bar+=']'
+            
+        print("Simulations {}/{},{} ETA {}".format(int(progress), int(n_sim),bar, time_left[:-7]), end='\r')
+        np.save(temporary_filename, np.array([progress, time]))
+    except:
+        pass    
