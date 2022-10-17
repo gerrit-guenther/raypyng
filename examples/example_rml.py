@@ -24,7 +24,7 @@ for oe in rml.beamline.children():
 for param in rml.beamline.Dipole.children():
     print('Dipole param: ', param.id)
 
-# Modify a paramer of the Diple:
+# Modify a parameter of the Diple:
 print('Dipole photon energy: ',rml.beamline.Dipole.photonEnergy.cdata)
 rml.beamline.Dipole.photonEnergy.cdata = str(2000)
 print('New Dipole photon energy: ',rml.beamline.Dipole.photonEnergy.cdata)
